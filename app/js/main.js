@@ -31,7 +31,7 @@ WallabagIndexApp
                     controller: 'UnreadController',
                     controllerAs: 'ctrl',
                     resolve: {
-                        unreadURLs: ['$route', 'SearchService', function ($route, SearchService) {
+                        unreadURLs: ['$route', 'EntryService', function ($route, EntryService) {
                            var params = $route.current.params;
                             console.log('params.user='+ params.user);
                             return EntryService.unread({'user':params.user}).$promise;
@@ -40,7 +40,7 @@ WallabagIndexApp
                 })
 
                 .otherwise({
-                    templateUrl: 'partials/landing.html',
+                    templateUrl: 'partials/login.html',
                 });
         }
     ])

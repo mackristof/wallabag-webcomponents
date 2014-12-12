@@ -4,7 +4,7 @@ angular.module('wallabag-restapi', ['ngResource'])
     .factory('EntryService', function($resource) {
         return $resource('api/u/:user/entries', null, {
             'getUnreads': {
-                method: 'GET'
+                method: 'GET',
                 isArray: true
             },
             'addEntry' : {
