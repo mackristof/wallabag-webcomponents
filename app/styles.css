@@ -49,7 +49,7 @@ paper-checkbox {
   margin-left: 1em;
 }
 
-paper-fab {
+.md-fab {
   position: absolute !important;
   z-index: 1;
   color: #FFF;
@@ -64,6 +64,32 @@ core-drawer-panel:not([narrow]) #navicon {
 
 #core-header-panel-drawer {
   background-color: #FFF;
+}
+
+.card-header {
+  display: block;
+  position: relative;
+  background-color: white !important;
+  padding: 20px;
+  width: 100%;
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin: 20px;
+}
+.card-header {
+  margin-bottom: 10px;
+}
+
+.card-header  h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 300;
+}
+
+.card-header  img {
+  width: 70px;
+  border-radius: 50%;
+  margin: 10px;
 }
 
 

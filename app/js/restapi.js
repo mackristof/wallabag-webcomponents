@@ -2,13 +2,14 @@ angular.module('wallabag-restapi', ['ngResource'])
 
 
     .factory('EntryService', function($resource) {
-        return $resource('api/u/:user/entries', null, {
+        return $resource('http://localhost:3000/api/u/:user/entries', null, {
             'getUnreads': {
                 method: 'GET',
                 isArray: true
             },
             'addEntry' : {
                 method: 'POST',
+                isArray: true
             },
             'updateEntry' : {
                 method: 'POST',
@@ -20,6 +21,10 @@ angular.module('wallabag-restapi', ['ngResource'])
             },
             'deleteEntry' : {
                 method: 'DELETE',
+                url: 'api/u/:user'
+            },
+            'login' : {
+                method: 'POST',
                 url: 'api/u/:user'
             }
         });

@@ -1,11 +1,12 @@
 <div class="container" layout vertical center>
-    UNREAD
+    fav
       <div class="container-row" layout vertical>
         <div ng-repeat="article in ctrl.unreadUrlList">
-          <div class="card-header" layout horizontal center ng-controller="entryController as entryCrtl">
-            <img src="" ng-src="{{article.url}}">
+          <wallabag-card flex>
+            <img src="" ng-src="{{article.urlImage}}">
             <h2>{{article.title}}</h2>
-          </div>
+            <p>{{article.abstract}}</p>
+          </wallabag-card>
         </div>
       </div>
     </div>

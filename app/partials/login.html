@@ -1,7 +1,19 @@
 <section id="content" class="body">
-  <div class="entry-content">
-    <p style="text-align:center">
-      <img alt="wallabag" src="https://www.wallabag.org/images/logo.png">
-    </p>
-  </div>
+    <div class="entry-content">
+        <div vertical layout center>
+            <img alt="wallabag" src="https://www.wallabag.org/images/logo.png">
+            <br>
+            <paper-input-decorator label="Login" style="max-width: 15em;">
+                <input is="core-input" type="text" ng-model="ctrl.username">
+            </paper-input-decorator>
+            <paper-input-decorator label="Password" style="max-width: 15em;">
+                <input is="core-input" type="password">
+            </paper-input-decorator>
+            
+            <div horizontal layout center>
+                <paper-button ng-click="ctrl.login()"> <core-icon icon="check"></core-icon> ok </paper-button>
+                <paper-button> <core-icon icon="clear"></core-icon> cancel </paper-button>
+            </div>
+        </div>
+    </div>
 </section>
