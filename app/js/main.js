@@ -15,6 +15,7 @@ angular.module('WallabagIndexDep', [
     // Angular official modules.
     'ngResource',
     'ngRoute',
+    'base64',
     // Rest api provider
     'wallabag-restapi',
     'ngMaterial'
@@ -53,7 +54,7 @@ var redirectIfAuthenticated = function(route) {
     }
 };
  var userIsAuthenticated = function($rootScope){
-     if ($rootScope.username) {
+     if ($rootScope.login) {
          return true;
      } else {
          return false
@@ -71,7 +72,7 @@ WallabagIndexApp
                     controllerAs: 'ctrl',
                     resolve: {
                         unreadURLs: ['$route','$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
-                            return EntryService.getUnreads({'user':$rootScope.username}).$promise;
+                            return EntryService.getUnreads().$promise;
                         }],
                         loginRequired: loginRequired
                     }
@@ -127,16 +128,21 @@ WallabagIndexApp
     })
 
 
-    .controller('LoginController', function( $rootScope , $location) {
+    .controller('LoginController', function( $rootScope , $location, EntryService) {
         var ctrl = {
             username: ''
         };
 
         ctrl.login = function(){
-            if (ctrl.username) {
+            if (ctrl.username && ctrl.password) {
                 console.log('ctrl.user=' + ctrl.username);
-                $rootScope.username = ctrl.username;
-                console.log('rootScope.user=' + $rootScope.username);
+                $rootScope.login = ctrl.username;
+                console.log('rootScope.login=' + $rootScope.login);
+                console.log('ctrl.user=' + ctrl.password);
+                $rootScope.password = ctrl.password;
+                console.log('rootScope.password=' + $rootScope.password);
+                $rootScope.salt = EntryService.getSalt({login: ctrl.username});
+                console.log('rootScope.salt=' + $rootScope.salt);
                 $location.path("/unread");
             } else {
                 console.log('enter login');
