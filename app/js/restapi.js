@@ -144,7 +144,7 @@ angular.module('wallabag-restapi', ['ngResource', 'base64'])
                 isArray: true
             },
             'getSalt': {
-                url: 'http://v2.wallabag.org/api/salt/:login.json',
+                url: 'http://v2.wallabag.org/api/salts/:login.json',
                 method: 'GET',
                 isArray: true
             }
