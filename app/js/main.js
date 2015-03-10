@@ -103,7 +103,7 @@ WallabagIndexApp
                     templateUrl: 'partials/login.html',
                     controller: 'LoginController',
                     controllerAs: 'ctrl',
-                    resolve: { redirectIfAuthenticated: redirectIfAuthenticated('/unread') }
+                    resolve: { redirectIfAuthenticated: redirectIfAuthenticated('/') }
                 });
         }
     ])
@@ -130,7 +130,8 @@ WallabagIndexApp
 
     .controller('LoginController', function( $rootScope , $location, EntryService) {
         var ctrl = {
-            username: ''
+            username: 'wallabag',
+            password: 'wallabag'
         };
 
         ctrl.login = function(){
@@ -141,9 +142,11 @@ WallabagIndexApp
                 console.log('ctrl.user=' + ctrl.password);
                 $rootScope.password = ctrl.password;
                 console.log('rootScope.password=' + $rootScope.password);
-                $rootScope.salt = EntryService.getSalt({login: ctrl.username});
+                EntryService.getSalt({login: ctrl.username}, function(response){
+                    $rootScope.salt=response;
+                });
                 console.log('rootScope.salt=' + $rootScope.salt);
-                $location.path("/unread");
+                $location.path("/");
             } else {
                 console.log('enter login');
             }

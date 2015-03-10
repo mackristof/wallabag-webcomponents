@@ -21,36 +21,37 @@ angular.module('wallabag-restapi', ['ngResource', 'base64'])
                 // Define variables from cookie cache
                 var username = $rootScope.username;
                 var digest = $rootScope.digest;
-                var b64nonce = $rootScope.b64nonce;
+                var nonce = $rootScope.nonce;
                 var created = $rootScope.created;
             } else {
                 // Create token for backend communication
                 var seed = Math.floor( Math.random() * 1000 )+'';
                 // Encode seed in MD5
-                var nonce = CryptoJS.MD5( seed ).toString(CryptoJS.enc.Hex);
-
+                var nonce = CryptoJS.MD5( seed ).toString(CryptoJS.enc.Hex).substr(0,16);
+                console.log('nonce='+ nonce.length)
                 // Creation time of the token
                 var created = formatDate(new Date());
 
                 // Generating digest from secret, creation and seed
                 //var hash = CryptoJS.SHA1(nonce+created+password);
-                var hash = CryptoJS.SHA1(password+username+salt);
-                var digest = hash.toString(CryptoJS.enc.Base64);
+                var encryptedPassword = CryptoJS.SHA1(password+username+salt);
+                var digest = $base64.encode(CryptoJS.SHA1($base64.decode(nonce)+created+encryptedPassword));
+                //var digest = hash.toString(CryptoJS.enc.Base64);
 
                 // Base64 Encode digest
-                var b64nonce = $base64.encode(nonce);
+                //var b64nonce = $base64.encode(nonce);
 
                 // Save token in cookies
-                $rootScope.username = username;
-                $rootScope.digest = digest;
-                $rootScope.nonce = b64nonce;
-                $rootScope.created = created;
+                //$rootScope.username = username;
+                //$rootScope.digest = digest;
+                //$rootScope.nonce = nonce;
+                //$rootScope.created = created;
                 //
             }
 
             // Return generated token
-            console.log('UsernameToken Username="'+username+'", PasswordDigest="'+digest+'", Nonce="'+b64nonce+'", Created="'+created+'"');
-            return 'UsernameToken Username="'+username+'", PasswordDigest="'+digest+'", Nonce="'+b64nonce+'", Created="'+created+'"';
+            console.log('UsernameToken Username="'+username+'", PasswordDigest="'+digest+'", Nonce="'+nonce+'", Created="'+created+'"');
+            return 'UsernameToken Username="'+username+'", PasswordDigest="'+digest+'", Nonce="'+nonce+'", Created="'+created+'"';
         };
 
         // Token Reinitializer
@@ -80,7 +81,10 @@ angular.module('wallabag-restapi', ['ngResource', 'base64'])
         var tokenWrapper = function ( resource, action ) {
             resource['_'+action] = resource[action];
             resource[action] = function ( data, success, error ) {
+                console.log('set header x-wsse');
+                console.log($rootScope.login+', ' +$rootScope.password+', '+ $rootScope.salt)
                 $http.defaults.headers.common['X-WSSE'] = tokenHandler.getCredentials($rootScope.login, $rootScope.password, $rootScope.salt);
+                $http.defaults.headers.common['Authorization'] = 'profile="UsernameToken"';
                 return resource['_'+action](
                     data,
                     success,
