@@ -3,88 +3,93 @@ toastGroupTemplate.showToast = function() {
   document.querySelector('#toast').show();
 };*/
 
-document.addEventListener('polymer-ready', function() {
-  var navicon = document.getElementById('navicon');
-  var drawerPanel = document.getElementById('drawerPanel');
-  navicon.addEventListener('click', function() {
-    drawerPanel.togglePanel();
-  });
+document.addEventListener('polymer-ready', function () {
+    var navicon = document.getElementById('navicon');
+    var drawerPanel = document.getElementById('drawerPanel');
+    navicon.addEventListener('click', function () {
+        drawerPanel.togglePanel();
+    });
 });
 
 angular.module('WallabagIndexDep', [
     // Angular official modules.
     'ngResource',
     'ngRoute',
-    'base64',
+    'ngMaterial',
     // Rest api provider
-    'wallabag-restapi',
-    'ngMaterial'
+    'wallabag-restapi'
+
 ]);
 
 
 var WallabagIndexApp = angular.module('WallabagIndexApp', ['WallabagIndexDep']);
 
 
-var loginRequired = function($location, $q, $rootScope) {
+var loginRequired = function ($location, $q, $rootScope) {
     var deferred = $q.defer();
 
-    if(! userIsAuthenticated($rootScope)) {
-        deferred.reject()
-        $location.path('/login');
+    if (!userIsAuthenticated($rootScope)) {
+        deferred.reject();
+        $location.path('/login').replace();
     } else {
-        deferred.resolve()
+        deferred.resolve();
     }
 
     return deferred.promise;
 };
 
-var redirectIfAuthenticated = function(route) {
-    return function($location, $q, $rootScope) {
+var redirectIfAuthenticated = function (route) {
+    return function ($location, $q, $rootScope) {
 
         var deferred = $q.defer();
 
         if (userIsAuthenticated($rootScope)) {
-            deferred.reject()
-            $location.path("/toto"+route);
+            deferred.reject();
+            $location.path("/" + route).replace();
         } else {
-            deferred.resolve()
+            deferred.resolve();
         }
 
         return deferred.promise;
     }
 };
- var userIsAuthenticated = function($rootScope){
-     if ($rootScope.login) {
-         return true;
-     } else {
-         return false
-     }
+var userIsAuthenticated = function ($rootScope) {
+    console.log('userIsAuthen=' + $rootScope.login);
+    if ($rootScope.login) {
+        console.log('userIsAuthen=' + true);
+        return true;
+    } else {
+        console.log('userIsAuthen=' + false);
+        return false
+    }
 
- };
+};
 
 WallabagIndexApp
-  .config(['$routeProvider',
-        function ($routeProvider){
+    .config(['$routeProvider',
+        function ($routeProvider) {
             $routeProvider
                 .when('/unread', {
                     templateUrl: 'partials/unread.html',
                     controller: 'UnreadController',
                     controllerAs: 'ctrl',
                     resolve: {
-                        unreadURLs: ['$route','$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
+                        unreadURLs: ['$route', '$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
                             return EntryService.getUnreads().$promise;
                         }],
                         loginRequired: loginRequired
                     }
                 })
 
-                .when('/favorites', {
+            .when('/favorites', {
                     templateUrl: 'partials/favorites.html',
                     controller: 'FavoritesController',
                     controllerAs: 'ctrl',
                     resolve: {
-                        favoritesURLs: ['$route','$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
-                            return EntryService.getUnreads({'user':$rootScope.username}).$promise;
+                        favoritesURLs: ['$route', '$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
+                            return EntryService.getUnreads({
+                                'user': $rootScope.username
+                            }).$promise;
                         }],
                         loginRequired: loginRequired
                     }
@@ -99,15 +104,17 @@ WallabagIndexApp
                 })
 
 
-                .otherwise({
-                    templateUrl: 'partials/login.html',
-                    controller: 'LoginController',
-                    controllerAs: 'ctrl',
-                    resolve: { redirectIfAuthenticated: redirectIfAuthenticated('/') }
-                });
+            .otherwise({
+                templateUrl: 'partials/login.html',
+                controller: 'LoginController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    redirectIfAuthenticated: redirectIfAuthenticated('/')
+                }
+            });
         }
     ])
-    .controller('UnreadController', function( $rootScope , unreadURLs ) {
+    .controller('UnreadController', function ($rootScope, unreadURLs) {
         var ctrl = {
             unreadUrlList: unreadURLs,
             username: $rootScope.username
@@ -117,67 +124,71 @@ WallabagIndexApp
         return ctrl;
     })
 
-    .controller('FavoritesController', function( $rootScope , favoritesURLs ) {
-        var ctrl = {
-            unreadUrlList: favoritesURLs,
-            username: $rootScope.username
-        };
+.controller('FavoritesController', function ($rootScope, favoritesURLs) {
+    var ctrl = {
+        unreadUrlList: favoritesURLs,
+        username: $rootScope.username
+    };
 
 
-        return ctrl;
-    })
+    return ctrl;
+})
 
 
-    .controller('LoginController', function( $rootScope , $location, EntryService) {
+.controller('LoginController', function ($rootScope, $location, EntryService) {
         var ctrl = {
             username: 'wallabag',
             password: 'wallabag'
         };
 
-        ctrl.login = function(){
+        ctrl.login = function () {
             if (ctrl.username && ctrl.password) {
-                console.log('ctrl.user=' + ctrl.username);
+
                 $rootScope.login = ctrl.username;
-                console.log('rootScope.login=' + $rootScope.login);
-                console.log('ctrl.user=' + ctrl.password);
                 $rootScope.password = ctrl.password;
-                console.log('rootScope.password=' + $rootScope.password);
-                EntryService.getSalt({login: ctrl.username}, function(response){
-                    $rootScope.salt=response;
+                EntryService.getSalt({
+                    login: ctrl.username
+                }, function (response) {
+                    $rootScope.salt = response;
+                    $location.path("/unread");
                 });
-                console.log('rootScope.salt=' + $rootScope.salt);
-                $location.path("/");
+
             } else {
                 console.log('enter login');
             }
         };
         return ctrl;
     })
-    .controller('AddEntryController', function( $rootScope, EntryService, $location) {
+    .controller('AddEntryController', function ($rootScope, EntryService, $location) {
         var ctrl = {
             username: $rootScope.username,
             url: '',
             title: ''
         };
 
-        ctrl.add = function(){
-            EntryService.addEntry({'user':$rootScope.username },{'url': ctrl.url, 'title': ctrl.title},
-                function(response){//success
-                    console.log('url added:'+ctrl.url);
+        ctrl.add = function () {
+            EntryService.addEntry({
+                    'user': $rootScope.username
+                }, {
+                    'url': ctrl.url,
+                    'title': ctrl.title
+                },
+                function (response) { //success
+                    console.log('url added:' + ctrl.url);
                     $location.path('/unread');
 
-            });
+                });
         };
         return ctrl;
     })
-    .controller('entryController', function( $rootScope, EntryService ) {
+    .controller('entryController', function ($rootScope, EntryService) {
         var ctrl = {
             username: $rootScope.username,
             url: '',
             title: ''
         };
 
-        ctrl.favoriteEntry = function(){
+        ctrl.favoriteEntry = function () {
             //EntryService.addEntry({'user':$rootScope.username },{'url': ctrl.url, 'title': ctrl.title},
             //    function(response){//success
             //        console.log('url added:'+ctrl.url);
@@ -187,16 +198,15 @@ WallabagIndexApp
     })
 
 
-    .controller('ControlController', function( $rootScope , $scope, $location) {
+.controller('ControlController', function ($rootScope, $scope, $location) {
 
-        $scope.addEntry = function(){
-            console.log('click addEntry'+$rootScope.username);
-            $location.path("/addEntry")
+    $scope.addEntry = function () {
+        console.log('click addEntry' + $rootScope.username);
+        $location.path("/addEntry")
 
-        };
-        $scope.searchEntries = function(){
-            console.log('click searchEntries'+$rootScope.username);
+    };
+    $scope.searchEntries = function () {
+        console.log('click searchEntries' + $rootScope.username);
 
-        };
-    });
-;
+    };
+});;

@@ -12,17 +12,14 @@
     <script src="lib/webcomponentsjs/webcomponents.js"></script>
     <script src="lib/angular/angular.js"></script>
     <script src="lib/angular-resource/angular-resource.js"></script>
-    <script src="lib/angular-base64/angular-base64.js"></script>
-    <script src="lib/cryptojs/components/core.js"></script>
-    <script src="lib/cryptojs/components/enc-base64.js"></script>
-    <script src="lib/cryptojs/rollups/md5.js"></script>
-    <script src="lib/cryptojs/rollups/sha1.js"></script>
     <script src="lib/angular-route/angular-route.js"></script>
     <script src="lib/angular-aria/angular-aria.js"></script>
     <script src="lib/angular-animate/angular-animate.js"></script>
     <script src="lib/hammerjs/hammer.js"></script>
     <script src="lib/angular-material/angular-material.js"></script>
     <script src="js/restapi.js"></script>
+    <script src="js/sha1.js"></script>
+    <script src="js/base64.js"></script>
     <link rel="import" href="lib/core-header-panel/core-header-panel.html">
     <link rel="import" href="lib/core-drawer-panel/core-drawer-panel.html">
     <link rel="import" href="lib/core-menu/core-menu.html">
@@ -76,23 +73,23 @@
             </core-menu>
         </core-header-panel>
 
-            <core-header-panel main>
-                <core-toolbar>
-                    <div ng-controller="ControlController">
-                        <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
-                        <span flex><img src="https://www.wallabag.org/images/logo.png" style="height: 50px;"></span>
-                        <md-button class="md-fab" ng-click="searchEntries()"  aria-label="Search" style="top: 35px;right: 4em;">
-                            <!--<md-icon icon="img/ic_note_add_24px.svg" style="width: 24px; height: 24px;"></md-icon>-->
-                            <core-icon icon="search" ></core-icon>
-                        </md-button>
-                        <md-button  ng-click="addEntry()" class="md-fab" aria-label="Add Element" style="top: 35px;right: 1em;" >
-                            <!--<md-icon icon="img/ic_note_add_24px.svg" style="width: 24px; height: 24px;"></md-icon>-->
-                            <core-icon icon="add" ></core-icon>
-                        </md-button>
-                    </div>
-                </core-toolbar>
-                <div ng-view></div>
-            </core-header-panel>
+        <core-header-panel main>
+            <core-toolbar>
+                <div ng-controller="ControlController">
+                    <paper-icon-button id="navicon" icon="menu"></paper-icon-button>
+                    <span flex><img src="https://www.wallabag.org/images/logo.png" style="height: 50px;"></span>
+                    <md-button class="md-fab" ng-click="searchEntries()" aria-label="Search" style="top: 35px;right: 4em;">
+                        <!--<md-icon icon="img/ic_note_add_24px.svg" style="width: 24px; height: 24px;"></md-icon>-->
+                        <core-icon icon="search"></core-icon>
+                    </md-button>
+                    <md-button ng-click="addEntry()" class="md-fab" aria-label="Add Element" style="top: 35px;right: 1em;">
+                        <!--<md-icon icon="img/ic_note_add_24px.svg" style="width: 24px; height: 24px;"></md-icon>-->
+                        <core-icon icon="add"></core-icon>
+                    </md-button>
+                </div>
+            </core-toolbar>
+            <div ng-view></div>
+        </core-header-panel>
 
     </core-drawer-panel>
 

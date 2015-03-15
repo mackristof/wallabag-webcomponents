@@ -1,11 +1,10 @@
 <div class="container" layout vertical center>
-    UNREAD
-      <div class="container-row" layout vertical>
+    <div class="container-row" layout vertical>
         <div ng-repeat="article in ctrl.unreadUrlList">
-          <div class="card-header" layout horizontal center ng-controller="entryController as entryCrtl">
-            <img src="" ng-src="{{article.url}}">
-            <h2>{{article.title}}</h2>
-          </div>
+            <md-card layout horizontal center ng-controller="entryController as entryCrtl">
+                <h2>{{article.title}}</h2>
+                <p ng-bind-html-unsafe="article.content"></p>
+            </md-card>
         </div>
-      </div>
     </div>
+</div>
