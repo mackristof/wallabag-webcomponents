@@ -1,7 +1,4 @@
-/*var toastGroupTemplate = document.querySelector('#toastGroup');
-toastGroupTemplate.showToast = function() {
-  document.querySelector('#toast').show();
-};*/
+
 
 document.addEventListener('polymer-ready', function () {
     var navicon = document.getElementById('navicon');
@@ -16,6 +13,7 @@ angular.module('WallabagIndexDep', [
     'ngResource',
     'ngRoute',
     'ngMaterial',
+    'ngSanitize',
     // Rest api provider
     'wallabag-restapi'
 
@@ -45,7 +43,7 @@ var redirectIfAuthenticated = function (route) {
 
         if (userIsAuthenticated($rootScope)) {
             deferred.reject();
-            $location.path("/" + route).replace();
+            $location.path(route).replace();
         } else {
             deferred.resolve();
         }
@@ -74,10 +72,10 @@ WallabagIndexApp
                     controller: 'UnreadController',
                     controllerAs: 'ctrl',
                     resolve: {
+                        loginRequired: loginRequired,
                         unreadURLs: ['$route', '$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
                             return EntryService.getUnreads().$promise;
-                        }],
-                        loginRequired: loginRequired
+                        }]
                     }
                 })
 
@@ -86,12 +84,13 @@ WallabagIndexApp
                     controller: 'FavoritesController',
                     controllerAs: 'ctrl',
                     resolve: {
+                        loginRequired: loginRequired,
                         favoritesURLs: ['$route', '$rootScope', 'EntryService', function ($route, $rootScope, EntryService) {
                             return EntryService.getUnreads({
                                 'user': $rootScope.username
                             }).$promise;
-                        }],
-                        loginRequired: loginRequired
+                        }]
+
                     }
                 })
                 .when('/addEntry', {
@@ -109,7 +108,7 @@ WallabagIndexApp
                 controller: 'LoginController',
                 controllerAs: 'ctrl',
                 resolve: {
-                    redirectIfAuthenticated: redirectIfAuthenticated('/')
+                    redirectIfAuthenticated: redirectIfAuthenticated('/unread')
                 }
             });
         }
@@ -168,8 +167,6 @@ WallabagIndexApp
 
         ctrl.add = function () {
             EntryService.addEntry({
-                    'user': $rootScope.username
-                }, {
                     'url': ctrl.url,
                     'title': ctrl.title
                 },
@@ -181,21 +178,42 @@ WallabagIndexApp
         };
         return ctrl;
     })
-    .controller('entryController', function ($rootScope, EntryService) {
+    .controller('entryController', function ($rootScope, EntryService, $scope, $timeout, $mdBottomSheet) {
         var ctrl = {
             username: $rootScope.username,
             url: '',
             title: ''
         };
-
+        
+        $scope.showGridBottomSheet = function($event, articleId) {
+            $scope.alert = '';
+            $mdBottomSheet.show({
+                templateUrl: 'partials/bottom-grid.html',
+                controller: 'GridBottomSheetCtrl',
+                targetEvent: $event
+            }).then(function(clickedItem) {
+                $scope.alert = articleId +' '+clickedItem.name + ' clicked!';
+            });
+        };
+        
         ctrl.favoriteEntry = function () {
-            //EntryService.addEntry({'user':$rootScope.username },{'url': ctrl.url, 'title': ctrl.title},
-            //    function(response){//success
-            //        console.log('url added:'+ctrl.url);
-            //    });
+
         };
         return ctrl;
     })
+
+.controller('GridBottomSheetCtrl', function($scope, $mdBottomSheet) {
+  $scope.items = [
+    { name: 'Readed', icon: 'read' },
+    { name: 'Favorite', icon: 'favorite' },
+    { name: 'Delete', icon: 'delete' },
+    { name: 'Original', icon: 'link' },
+  ];
+  $scope.listItemClick = function($index) {
+    var clickedItem = $scope.items[$index];
+    $mdBottomSheet.hide(clickedItem);
+  };
+})
 
 
 .controller('ControlController', function ($rootScope, $scope, $location) {

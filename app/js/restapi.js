@@ -60,11 +60,10 @@ angular.module('wallabag-restapi', ['ngResource'])
         resource['_' + action] = resource[action];
         resource[action] = function (data, success, error) {
             console.log('set header x-wsse');
-            console.log($rootScope.login + ', ' + $rootScope.password + ', ' + $rootScope.salt)
-            $http.defaults.headers.common['X-WSSE'] = tokenHandler.getCredentials($rootScope.login, $rootScope.password, $rootScope.salt);
-            //$http.defaults.headers.common['Content-Type'] = 'application/json';
-            //$http.defaults.headers.common['Accept'] = 'application/json';
-            //$http.defaults.headers.common['Authorization'] = 'profile="UsernameToken"';
+            console.log($rootScope.login + ', ' + $rootScope.password + ', ' + $rootScope.salt);
+            if ($rootScope.login != undefined && $rootScope.password != undefined && $rootScope.salt != undefined){
+                $http.defaults.headers.common['X-WSSE'] = tokenHandler.getCredentials($rootScope.login, $rootScope.password, $rootScope.salt);
+            }
             return resource['_' + action](
                 data,
                 success,
@@ -91,37 +90,10 @@ angular.module('wallabag-restapi', ['ngResource'])
     }])
 
 
-/*.factory('EntryService', function($resource) {
-    return $resource('http://localhost:3000/api/u/:user/entries', null, {
-        'getUnreads': {
-            method: 'GET',
-            isArray: true
-        },
-        'addEntry' : {
-            method: 'POST',
-            isArray: true
-        },
-        'updateEntry' : {
-            method: 'POST',
-            url:    'api/u/:user/entry/:id'
-        },
-        'getEntry' : {
-            method: 'GET',
-            url:    'api/u/:user/entry/:id'
-        },
-        'deleteEntry' : {
-            method: 'DELETE',
-            url: 'api/u/:user'
-        },
-        'login' : {
-            method: 'POST',
-            url: 'api/u/:user'
-        }
-    });
-})*/
+
 
 .factory('EntryService', ['$resource', 'TokenHandler', function ($resource, tokenHandler) {
-    var resource = $resource('http://v2.wallabag.org/api/entries', null, {
+    var resource = $resource('http://v2.wallabag.org/api/entries.json', null, {
         'getUnreads': {
             method: 'GET',
             isArray: true
@@ -130,9 +102,13 @@ angular.module('wallabag-restapi', ['ngResource'])
             url: 'http://v2.wallabag.org/api/salts/:login.json',
             method: 'GET',
             isArray: true
+        },
+        'addEntry': {
+            url: 'http://v2.wallabag.org/api/entries.json',
+            method: 'POST'
         }
     });
-    resource = tokenHandler.wrapActions(resource, ['getUnreads']);
+    resource = tokenHandler.wrapActions(resource, ['getUnreads', 'addEntry']);
     return resource;
     }])
 

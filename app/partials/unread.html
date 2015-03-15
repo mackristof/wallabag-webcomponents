@@ -1,10 +1,12 @@
-<div class="container" layout vertical center>
-    <div class="container-row" layout vertical>
-        <div ng-repeat="article in ctrl.unreadUrlList">
-            <md-card layout horizontal center ng-controller="entryController as entryCrtl">
-                <h2>{{article.title}}</h2>
-                <p ng-bind-html-unsafe="article.content"></p>
-            </md-card>
-        </div>
-    </div>
-</div>
+<md-content>
+  <md-card ng-repeat="article in ctrl.unreadUrlList" ng-controller="entryController as entryCrtl">
+    <h2>{{article.title}}</h2>
+    <div ng-bind-html="article.content.substring(0, 250)+' ...'"></div>
+      <md-button class="md-primary" ng-click="showGridBottomSheet($event, article.id)">
+        Details
+    </md-button>
+      <b layout="row" layout-align="center center" layout-margin>
+    {{alert}}
+  </b>
+  </md-card>
+</md-content>
